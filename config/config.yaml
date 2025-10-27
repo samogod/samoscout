@@ -1,0 +1,64 @@
+# samoscout configuration file
+
+api_keys:
+  censys: ""
+  virustotal: ""
+  bevigil: ""
+  bufferover: ""
+  builtwith: ""
+  c99: ""
+  certspotter: ""
+  chaos: ""
+  chinaz: ""
+  cloudflare: ""
+  digitalyama: ""
+  dnsdb: ""
+  dnsdumpster: ""
+  dnsrepo: ""
+  dnsarchive: ""
+  driftnet: ""
+  fofa: ""
+  fullhunt: ""
+  gitlab: ""
+  hunter: ""
+  jsmon: ""
+  netlas: ""
+  pugrecon: ""
+  quake: ""
+  redhuntlabs: ""
+  robtex: ""
+  rsecloud: ""
+  securitytrails: ""
+  shodan: ""
+  subdomaincenter: ""
+  threatbook: ""
+  urlscan: ""
+  whoisxmlapi: ""
+  windvane: ""
+  zoomeyeapi: ""
+
+default_settings:
+  timeout: 10
+
+active_enumeration:
+  enabled: false
+  dsieve_top: 50
+  dsieve_factor: 4
+  output_dir: ".samoscout_active"
+
+llm_enumeration:
+  enabled: false
+  device: "auto"
+  num_predictions: 500
+  max_recursion: 5
+  max_tokens: 10
+  temperature: 0.0
+  run_after_passive: true
+  run_after_active: false
+
+database:
+  enabled: false
+  host: "localhost"
+  port: 5432
+  user: "postgres"
+  password: "postgres"
