@@ -43,6 +43,7 @@
 
 **Active Enumeration**
 - Wordlist-based subdomain generation and permutation
+- Custom wordlist support with automatic fallback to six2dez default
 - Multi-level dsieve algorithm with Trickest wordlists
 - DNS resolution via puredns with wildcard detection
 - Rate-limited query execution with trusted resolver pools
@@ -144,6 +145,7 @@ SOURCE:
 
 ACTIVE ENUMERATION:
    -active                 enable active subdomain enumeration (wordlist + dsieve + mksub)
+   -w, -wordlist string   custom wordlist path for active enumeration (default: six2dez wordlist)
    -deep-enum             enable deep level enumeration (dsieve + trickest wordlists)
 
 AI PREDICTION:
@@ -194,6 +196,9 @@ samoscout -d example.com --stats
 # Active enumeration (wordlist + dsieve + mksub + gotator)
 samoscout -d example.com --active
 
+# Use custom wordlist for active enumeration
+samoscout -d example.com --active -w /path/to/wordlist.txt
+
 # Deep enumeration (multi-level dsieve + trickest wordlists)
 samoscout -d example.com --active --deep-enum
 
@@ -205,6 +210,9 @@ samoscout -d example.com --httpx
 
 # Combined full enumeration
 samoscout -d example.com --active --deep-enum --llm --httpx --stats
+
+# Use custom wordlist with full enumeration
+samoscout -d example.com --active -w custom-wordlist.txt --deep-enum --llm --httpx
 ```
 
 ### Database Operations
