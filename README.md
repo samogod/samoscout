@@ -14,11 +14,11 @@
 
 <p align="center">
   <a href="#features">Features</a> •
-  <a href="#technical-implementation">Implementation</a> •
-  <a href="#usage">Usage</a>
+  <a href="#install">Build</a> •
+  <a href="#usage">Usage</a> •
   <a href="#configuration-reference">Config</a> •
   <a href="#running-samoscout">Running samoscout</a> •
-  <a href="#install">Build</a> •
+  <a href="#technical-implementation">Implementation</a> •
 </p>
 
 ---
