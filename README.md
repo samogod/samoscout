@@ -87,6 +87,10 @@ WaybackArchive, WhoisXMLAPI, WindVane, ZoomEye
 - Decoding: Beam search with top-N sampling
 - Temperature: Configurable (default: 0.0 for deterministic output)
 
+**Model Development**
+A custom, project-specific finetuned and trained model is currently in development for samoscout. This dedicated model will be significantly larger (GB+) than the current general-purpose model, providing more consistent and accurate results specifically tailored for subdomain discovery workflows. Due to its high resource requirements, users will have the option to choose between:
+- **Light Model**: Current general-purpose model (lower memory footprint)
+- **Heavy Model**: Custom project-specific model (higher accuracy, larger size)
 
 **Iterative Refinement**
 ```
@@ -406,6 +410,33 @@ func (s *ExampleSource) Run(ctx context.Context, domain string, sess *session.Se
     return results
 }
 ```
+
+## Contributing
+
+Contributions are welcome and essential for the continuous development of samoscout. Your participation helps make this tool more powerful.
+
+### How to Contribute
+
+**Adding New Subdomain Services**
+
+samoscout uses a simple `Source` interface (see [Source Interface Implementation](#source-interface-implementation) above) that makes it easy to integrate new subdomain enumeration services. 
+
+To add a new subdomain service:
+
+1. **Open an Issue**: Request a new service by opening an issue describing the source and its capabilities
+2. **Check Existing Implementation**: Review the implementation examples in the `pkg/sources/` directory
+3. **Implement the Interface**: Follow the `Source` interface pattern shown above
+4. **Submit a PR**: Share your implementation with the community
+
+**Planned Enhancements (TODOs)**
+
+Your contributions can help accelerate these planned features:
+
+- **Heavy trained model**: Development of a custom, project-specific transformer model for improved subdomain discovery accuracy
+- **More subdomain services**: Expanding passive source integrations
+- **Centralized database**: Building a shared database infrastructure where subdomain data from all instances
+
+Whether you're adding services, improving documentation, or working on planned features, your contributions matter. Together we can build a more comprehensive and powerful subdomain discovery tool.
 
 ## License and Attribution
 
