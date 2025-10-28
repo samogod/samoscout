@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"os"
 
-	"samoscout/pkg/update"
+	"github.com/samogod/samoscout/pkg/update"
 
 	"github.com/fatih/color"
 	"github.com/spf13/cobra"
