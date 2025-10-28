@@ -1,7 +1,7 @@
 package main
 
 import (
-	"samoscout/cmd"
+	"github.com/samogod/samoscout/cmd"
 )
 
 func main() {
