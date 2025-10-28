@@ -7,7 +7,7 @@ import (
 	"path/filepath"
 	"strings"
 
-	"samoscout/pkg/active"
+	"github.com/samogod/samoscout/pkg/active"
 )
 
 type LLM struct {

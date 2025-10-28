@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"io"
 	"net/http"
-	"samoscout/pkg/config"
+	"github.com/samogod/samoscout/pkg/config"
 	"strings"
 	"time"
 )

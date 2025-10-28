@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"net/http"
 	"regexp"
-	"samoscout/pkg/session"
+	"github.com/samogod/samoscout/pkg/session"
 	"strings"
 )
 

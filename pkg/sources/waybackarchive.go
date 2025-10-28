@@ -7,7 +7,7 @@ import (
 	"net/http"
 	"net/url"
 	"regexp"
-	"samoscout/pkg/session"
+	"github.com/samogod/samoscout/pkg/session"
 	"strings"
 )
 

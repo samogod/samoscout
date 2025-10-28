@@ -6,7 +6,7 @@ import (
 	"fmt"
 	"net/http"
 	"net/url"
-	"samoscout/pkg/session"
+	"github.com/samogod/samoscout/pkg/session"
 	"strings"
 	"sync"
 	"sync/atomic"

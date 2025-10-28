@@ -3,7 +3,7 @@ package database
 import (
 	"database/sql"
 	"fmt"
-	"samoscout/pkg/config"
+	"github.com/samogod/samoscout/pkg/config"
 	"time"
 
 	_ "github.com/lib/pq"

@@ -3,7 +3,7 @@ package cmd
 import (
 	"fmt"
 	"os"
-	"samoscout/pkg/orchestrator"
+	"github.com/samogod/samoscout/pkg/orchestrator"
 	"strings"
 	"text/tabwriter"
 

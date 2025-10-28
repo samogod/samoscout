@@ -10,12 +10,12 @@ import (
 	"sync"
 	"time"
 
-	"samoscout/pkg/active"
-	"samoscout/pkg/config"
-	"samoscout/pkg/database"
-	"samoscout/pkg/llm"
-	"samoscout/pkg/session"
-	"samoscout/pkg/sources"
+	"github.com/samogod/samoscout/pkg/active"
+	"github.com/samogod/samoscout/pkg/config"
+	"github.com/samogod/samoscout/pkg/database"
+	"github.com/samogod/samoscout/pkg/llm"
+	"github.com/samogod/samoscout/pkg/session"
+	"github.com/samogod/samoscout/pkg/sources"
 
 	"github.com/sirupsen/logrus"
 )

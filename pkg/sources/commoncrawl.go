@@ -7,7 +7,7 @@ import (
 	"fmt"
 	"net/http"
 	"net/url"
-	"samoscout/pkg/session"
+	"github.com/samogod/samoscout/pkg/session"
 	"strconv"
 	"strings"
 	"time"

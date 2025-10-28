@@ -2,7 +2,7 @@ package sources
 
 import (
 	"context"
-	"samoscout/pkg/session"
+	"github.com/samogod/samoscout/pkg/session"
 )
 
 
