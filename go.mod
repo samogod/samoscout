@@ -1,4 +1,4 @@
-module samoscout
+module github.com/samogod/samoscout
 
 go 1.21
 
