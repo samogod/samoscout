@@ -2,10 +2,13 @@ package config
 
 import (
 	"fmt"
+	"io"
+	"net/http"
 	"os"
 	"path/filepath"
 	"reflect"
 	"strings"
+	"time"
 
 	"gopkg.in/yaml.v3"
 )
@@ -94,6 +97,8 @@ type Manager struct {
 	configPath string
 }
 
+const defaultConfigURL = "https://raw.githubusercontent.com/samogod/samoscout/main/config/config.yaml"
+
 func NewManager(configPath string) *Manager {
 	return &Manager{
 		configPath: configPath,
@@ -110,7 +115,12 @@ func (m *Manager) LoadConfig() error {
 	}
 
 	if _, err := os.Stat(m.configPath); os.IsNotExist(err) {
-		return fmt.Errorf("config file not found at %s. Please create one based on config.yaml.example", m.configPath)
+		if createErr := m.createDefaultConfig(); createErr != nil {
+			return fmt.Errorf("config file not found at %s and failed to create default: %w", m.configPath, createErr)
+		}
+		if DebugLog != nil {
+			DebugLog("created default config file at %s", m.configPath)
+		}
 	}
 
 	data, err := os.ReadFile(m.configPath)
@@ -168,13 +178,56 @@ func (m *Manager) findConfigFile() string {
 	}
 
 	if homeDir, err := os.UserHomeDir(); err == nil {
-		configPath := filepath.Join(homeDir, ".samoscout", "config.yaml")
+		configPath := filepath.Join(homeDir, ".config", "samoscout", "config.yaml")
 		if _, err := os.Stat(configPath); err == nil {
 			return configPath
 		}
+		return configPath
 	}
 
 	return "config/config.yaml"
+}
+
+func (m *Manager) createDefaultConfig() error {
+	configDir := filepath.Dir(m.configPath)
+	if err := os.MkdirAll(configDir, 0755); err != nil {
+		return fmt.Errorf("failed to create config directory: %w", err)
+	}
+
+	// Download default config from repository
+	configData, err := m.downloadDefaultConfig()
+	if err != nil {
+		return fmt.Errorf("failed to download default config: %w", err)
+	}
+
+	if err := os.WriteFile(m.configPath, configData, 0644); err != nil {
+		return fmt.Errorf("failed to write default config: %w", err)
+	}
+
+	return nil
+}
+
+func (m *Manager) downloadDefaultConfig() ([]byte, error) {
+	client := &http.Client{
+		Timeout: 10 * time.Second,
+	}
+
+	resp, err := client.Get(defaultConfigURL)
+	if err != nil {
+		return nil, fmt.Errorf("failed to fetch config from %s: %w", defaultConfigURL, err)
+	}
+	defer resp.Body.Close()
+
+	if resp.StatusCode != http.StatusOK {
+		return nil, fmt.Errorf("failed to download config, status code: %d", resp.StatusCode)
+	}
+
+	data, err := io.ReadAll(resp.Body)
+	if err != nil {
+		return nil, fmt.Errorf("failed to read config data: %w", err)
+	}
+
+	return data, nil
 }
 
 func (m *Manager) validateConfig(config *Config) error {
