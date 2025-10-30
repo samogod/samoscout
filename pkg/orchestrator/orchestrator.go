@@ -13,6 +13,7 @@ import (
 	"github.com/samogod/samoscout/pkg/active"
 	"github.com/samogod/samoscout/pkg/config"
 	"github.com/samogod/samoscout/pkg/database"
+    "github.com/samogod/samoscout/pkg/elastic"
 	"github.com/samogod/samoscout/pkg/llm"
 	"github.com/samogod/samoscout/pkg/session"
 	"github.com/samogod/samoscout/pkg/sources"
@@ -860,16 +861,54 @@ func (o *Orchestrator) runHTTPProbing(domain string, result *ScanResult) error {
 		DebugLog("running HTTP probing on %d subdomains", len(subdomainsToProbe))
 	}
 
-	activeURLs, err := active.ProbeHTTPSimple(subdomainsToProbe, domainDir, DebugLog != nil)
-	if err != nil {
-		return fmt.Errorf("HTTP probing failed: %w", err)
-	}
+    _, activeURLs, err := active.ProbeHTTP(subdomainsToProbe, domainDir, "", DebugLog != nil)
+    if err != nil {
+        return fmt.Errorf("HTTP probing failed: %w", err)
+    }
 
-	if len(result.ActiveWebServices) > 0 {
+    if len(result.ActiveWebServices) > 0 {
 		result.ActiveWebServices = append(result.ActiveWebServices, activeURLs...)
 	} else {
 		result.ActiveWebServices = activeURLs
 	}
+
+    if o.config.Elasticsearch.Enabled {
+        esCfg := o.config.Elasticsearch
+        idx := esCfg.Index
+        if strings.TrimSpace(idx) == "" {
+            idx = "samoscout_httpx"
+        }
+        client, err := elastic.New(elastic.Config{
+            URL:      esCfg.URL,
+            Username: esCfg.Username,
+            Password: esCfg.Password,
+            Index:    idx,
+        })
+        if err == nil {
+            jsonlPath := filepath.Join(domainDir, "httpx_results.json")
+            if _, statErr := os.Stat(jsonlPath); statErr != nil {
+                jsonlPath = ""
+            }
+            if jsonlPath == "" && DebugLog != nil {
+                DebugLog("no httpx JSONL file found for elasticsearch indexing")
+            }
+            if jsonlPath != "" {
+                if err := client.IndexJSONLinesFile(context.Background(), jsonlPath); err != nil {
+                    fmt.Printf("[ES] Indexing failed: %v\n", err)
+                    if DebugLog != nil {
+                        DebugLog("elasticsearch indexing failed: %v", err)
+                    }
+                } else {
+                    fmt.Printf("[ES] Indexed %s into index '%s'\n", filepath.Base(jsonlPath), idx)
+                    if DebugLog != nil {
+                        DebugLog("indexed httpx JSONL to elasticsearch index '%s'", idx)
+                    }
+                }
+            }
+        } else if DebugLog != nil {
+            DebugLog("elasticsearch client init failed: %v", err)
+        }
+    }
 
 	return nil
 }

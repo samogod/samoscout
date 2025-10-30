@@ -34,6 +34,7 @@
 - YAML configuration system with runtime reload capability
 - HTTP client pool with connection reuse and retry mechanisms
 - PostgreSQL database for subdomain tracking
+- Optional Elasticsearch indexing for HTTPX results (status, headers, html, tech)
 
 **Passive Reconnaissance**
 - 53 native API integrations without external binary dependencies
@@ -212,12 +213,32 @@ samoscout -d example.com --llm
 # HTTP probing
 samoscout -d example.com --httpx
 
+# HTTP probing + Elasticsearch (index HTTPX JSONL)
+# Ensure elasticsearch.enabled=true in config.yaml
+samoscout -d example.com --httpx
+
 # Combined full enumeration
 samoscout -d example.com --active --deep-enum --llm --httpx --stats
 
 # Use custom wordlist with full enumeration
 samoscout -d example.com --active -w custom-wordlist.txt --deep-enum --llm --httpx
 ```
+
+### Elasticsearch Integration
+
+Samoscout can stream HTTPX results directly into Elasticsearch for powerful search and analytics across active web services. Each record contains URL, status_code, title, technologies, webserver, content_type, and content_length, enabling rich filtering (e.g., framework, server, status class) and dashboards.
+
+- Enable in `config.yaml` with `elasticsearch.enabled: true`
+- Provide `url`, `username`, `password`, and optional `index` (default: `samoscout_httpx`)
+- Run any scan with `--httpx`; the JSONL output at `.samoscout_active/<domain>/httpx_results.json` is bulk-indexed automatically
+
+Expected console output on success:
+
+```
+[ES] Indexed httpx_results.json into index '<name>'
+```
+
+You can then create visualizations and saved searches over fields like `status_code`, `title`, `technologies`, and `webserver`.
 
 ### Database Operations
 ```bash
@@ -284,6 +305,13 @@ database:
   port: 5432                         # PostgreSQL port
   user: "postgres"                   # Database user
   password: "postgres"               # Database password
+
+elasticsearch:
+  enabled: false                     # Enable ES indexing for HTTPX output
+  url: "http://127.0.0.1:9200"       # Elasticsearch URL
+  username: "elastic"                # Username
+  password: "elastic"                # Password
+  index: "samoscout_httpx"           # Target index (default: samoscout_httpx)
 ```
 
 ## Database Schema

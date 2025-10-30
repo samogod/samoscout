@@ -21,6 +21,7 @@ type Config struct {
 	ActiveEnumeration ActiveEnumeration `yaml:"active_enumeration"`
 	LLMEnumeration    LLMEnumeration    `yaml:"llm_enumeration"`
 	Database          Database          `yaml:"database"`
+    Elasticsearch     Elasticsearch     `yaml:"elasticsearch"`
 }
 
 type APIKeys struct {
@@ -79,6 +80,14 @@ type Database struct {
 	Port     int    `yaml:"port"`
 	User     string `yaml:"user"`
 	Password string `yaml:"password"`
+}
+
+type Elasticsearch struct {
+    Enabled  bool   `yaml:"enabled"`
+    URL      string `yaml:"url"`
+    Username string `yaml:"username"`
+    Password string `yaml:"password"`
+    Index    string `yaml:"index"`
 }
 
 type LLMEnumeration struct {

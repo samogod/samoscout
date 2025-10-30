@@ -62,3 +62,10 @@ database:
   port: 5432
   user: "postgres"
   password: "postgres"
+
+elasticsearch:
+  enabled: true
+  url: "http://127.0.0.1:9200"
+  username: "elastic"
+  password: ""
+  index: "samoscout_httpx"

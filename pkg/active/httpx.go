@@ -92,12 +92,6 @@ func RunHttpx(subdomainFile, outputFile string, verbose bool) ([]HttpxResult, er
 
 	args := []string{
 		"-l", absSubdomainFile,
-		"-status-code",
-		"-title",
-		"-tech-detect",
-		"-web-server",
-		"-content-type",
-		"-content-length",
 		"-follow-redirects",
 		"-random-agent",
 		"-silent",
@@ -106,6 +100,7 @@ func RunHttpx(subdomainFile, outputFile string, verbose bool) ([]HttpxResult, er
 		"-timeout", "10",
 		"-retries", "1",
 		"-json",
+		"-irr",
 		"-o", absOutputFile,
 	}
 
@@ -138,6 +133,8 @@ func readHttpxResults(filePath string) ([]HttpxResult, error) {
 
 	var results []HttpxResult
 	scanner := bufio.NewScanner(file)
+    buf := make([]byte, 0, 1024*1024)
+    scanner.Buffer(buf, 64*1024*1024)
 
 	for scanner.Scan() {
 		line := strings.TrimSpace(scanner.Text())
@@ -165,6 +162,8 @@ func readSimpleList(filePath string) ([]string, error) {
 
 	var lines []string
 	scanner := bufio.NewScanner(file)
+    buf := make([]byte, 0, 128*1024)
+    scanner.Buffer(buf, 8*1024*1024)
 
 	for scanner.Scan() {
 		line := strings.TrimSpace(scanner.Text())
@@ -241,7 +240,7 @@ func ProbeHTTP(subdomains []string, outputDir string, inputFileName string, verb
 
 	fmt.Printf("[ACTIVE] Starting HTTP probing: %d subdomains\n", len(subdomains))
 
-	outputFile := filepath.Join(outputDir, strings.TrimSuffix(inputFileName, ".txt")+"_httpx_results.json")
+    outputFile := filepath.Join(outputDir, "httpx_results.json")
 	results, err := RunHttpx(subdomainFile, outputFile, verbose)
 	if err != nil {
 		return nil, nil, err
