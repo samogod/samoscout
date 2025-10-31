@@ -2,6 +2,7 @@ package llm
 
 import (
 	"context"
+	"embed"
 	"encoding/json"
 	"fmt"
 	"os"
@@ -9,11 +10,41 @@ import (
 	"path/filepath"
 	"runtime"
 	"strings"
+
+	"github.com/samogod/samoscout/pkg/config"
 )
+
+//go:embed llm_inference.py gpt_model.py
+var pythonScripts embed.FS
 
 type Model struct {
 	scriptPath string
 	config     *ModelConfig
+}
+
+func extractPythonScripts() (string, error) {
+	scriptsDir := filepath.Join(config.GetCacheDir(), "python_scripts")
+	
+	if err := os.MkdirAll(scriptsDir, 0755); err != nil {
+		return "", fmt.Errorf("failed to create scripts directory: %w", err)
+	}
+
+	scripts := []string{"llm_inference.py", "gpt_model.py"}
+	
+	for _, scriptName := range scripts {
+		scriptPath := filepath.Join(scriptsDir, scriptName)
+		
+		content, err := pythonScripts.ReadFile(scriptName)
+		if err != nil {
+			return "", fmt.Errorf("failed to read embedded script %s: %w", scriptName, err)
+		}
+		
+		if err := os.WriteFile(scriptPath, content, 0755); err != nil {
+			return "", fmt.Errorf("failed to write script %s: %w", scriptName, err)
+		}
+	}
+	
+	return filepath.Join(scriptsDir, "llm_inference.py"), nil
 }
 
 func LoadModel(modelPath, tokenizerPath string, device string) (*Model, error) {
@@ -24,12 +55,9 @@ func LoadModel(modelPath, tokenizerPath string, device string) (*Model, error) {
 		return nil, fmt.Errorf("failed to load model config: %w", err)
 	}
 
-	_, filename, _, _ := runtime.Caller(0)
-	pkgDir := filepath.Dir(filename)
-	scriptPath := filepath.Join(pkgDir, "llm_inference.py")
-
-	if _, err := os.Stat(scriptPath); os.IsNotExist(err) {
-		return nil, fmt.Errorf("inference script not found at %s", scriptPath)
+	scriptPath, err := extractPythonScripts()
+	if err != nil {
+		return nil, fmt.Errorf("failed to extract Python scripts: %w", err)
 	}
 
 	return &Model{
@@ -56,6 +84,13 @@ type InferenceResponse struct {
 	Error       string   `json:"error,omitempty"`
 }
 
+func getPythonCommand() string {
+	if runtime.GOOS == "windows" {
+		return "python"
+	}
+	return "python3"
+}
+
 func (m *Model) GenerateDomains(
 	ctx context.Context,
 	subdomains []string,
@@ -80,11 +115,12 @@ func (m *Model) GenerateDomains(
 		return nil, fmt.Errorf("failed to marshal request: %w", err)
 	}
 
-	cmd := exec.CommandContext(ctx, "python3", m.scriptPath)
+	pythonCmd := getPythonCommand()
+	cmd := exec.CommandContext(ctx, pythonCmd, m.scriptPath)
 	cmd.Stdin = strings.NewReader(string(reqJSON))
 	output, err := cmd.CombinedOutput()
 	if err != nil {
-		return nil, fmt.Errorf("failed to run inference: %w, output: %s", err, string(output))
+		return nil, fmt.Errorf("failed to run inference with '%s': %w\nOutput: %s\nHint: Ensure Python 3.7+ is installed and in PATH", pythonCmd, err, string(output))
 	}
 
 	var resp InferenceResponse
