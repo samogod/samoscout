@@ -240,6 +240,8 @@ Expected console output on success:
 
 You can then create visualizations and saved searches over fields like `status_code`, `title`, `technologies`, and `webserver`.
 
+![Elasticsearch Dashboard](img/elasticsearch.png)
+
 ### Database Operations
 ```bash
 # Query tracked subdomains
