@@ -186,15 +186,12 @@ func (m *Manager) findConfigFile() string {
 		return "config/config.yaml"
 	}
 
-	if homeDir, err := os.UserHomeDir(); err == nil {
-		configPath := filepath.Join(homeDir, ".config", "samoscout", "config.yaml")
-		if _, err := os.Stat(configPath); err == nil {
-			return configPath
-		}
-		return configPath
+	platformConfigPath := GetDefaultConfigPath()
+	if _, err := os.Stat(platformConfigPath); err == nil {
+		return platformConfigPath
 	}
 
-	return "config/config.yaml"
+	return platformConfigPath
 }
 
 func (m *Manager) createDefaultConfig() error {

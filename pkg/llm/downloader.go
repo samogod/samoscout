@@ -7,6 +7,8 @@ import (
 	"net/http"
 	"os"
 	"path/filepath"
+
+	"github.com/samogod/samoscout/pkg/config"
 )
 
 const (
@@ -22,12 +24,7 @@ type Downloader struct {
 }
 
 func NewDownloader() *Downloader {
-	home, err := os.UserHomeDir()
-	if err != nil {
-		home = "."
-	}
-	
-	cacheDir := filepath.Join(home, ".samoscout", "llm")
+	cacheDir := config.GetLLMCacheDir()
 	
 	return &Downloader{
 		cacheDir: cacheDir,
